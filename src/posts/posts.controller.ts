@@ -23,8 +23,17 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Me() me, @Body() createPostDto: CreatePostDto) {
-    return this.postsService.create({ ...createPostDto, userId: me.id });
+  create(@Me() { id, email }, @Body() createPostDto: CreatePostDto) {
+    const categories = createPostDto.categories?.map((category) => ({
+      id: category,
+    }));
+    return this.postsService.create({
+      ...createPostDto,
+      author: {
+        connect: { id },
+      },
+      categories: { connect: categories },
+    });
   }
 
   @Get()
@@ -39,7 +48,13 @@ export class PostsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
+    const categories = updatePostDto.categories?.map((category) => ({
+      id: category,
+    }));
+    return this.postsService.update(id, {
+      ...updatePostDto,
+      categories: { set: categories },
+    });
   }
 
   @Delete(':id')

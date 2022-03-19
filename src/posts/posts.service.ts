@@ -7,7 +7,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 @Injectable()
 export class PostsService {
   constructor(private prismaService: PrismaService) {}
-  create(createPostDto: CreatePostDto) {
+  create(createPostDto: Prisma.PostCreateInput) {
     return this.prismaService.post.create({ data: createPostDto });
   }
 
@@ -19,7 +19,7 @@ export class PostsService {
     return this.prismaService.post.findUnique({ where: { id } });
   }
 
-  update(id: string, updatePostDto: UpdatePostDto) {
+  update(id: string, updatePostDto: Prisma.PostUpdateInput) {
     return this.prismaService.post.update({
       data: updatePostDto,
       where: { id },
