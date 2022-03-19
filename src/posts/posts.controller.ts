@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Me } from 'src/auth/guards/me.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PostQueryDto } from './dto/query.dto';
+import { isEmpty } from 'src/util';
 
 @Controller('posts')
 export class PostsController {
@@ -25,8 +28,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query() query: PostQueryDto) {
+    return this.postsService.findAll(isEmpty(query) ? null : query);
   }
 
   @Get(':id')
