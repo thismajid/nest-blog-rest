@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { CreateCategoryDto } from 'src/categories/dto/create-category.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { hash, compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,10 +12,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: String) {
+  async validateUser(email: string, password: string) {
     const user = await this.usersService.findOneByEmail(email);
-    if (!user || user.password !== password) return false;
+    if (!user || !(await this.comparePassword(password, user.password)))
+      return false;
     return user;
+  }
+
+  async hashPassword(password: string) {
+    return await hash(password, 8);
+  }
+
+  async comparePassword(password: string, hashPassword: string) {
+    return await compare(password, hashPassword);
   }
 
   sign(user: User) {
@@ -29,7 +38,7 @@ export class AuthService {
   }
 
   async registerUser(createUserDto: CreateUserDto) {
-    const newUser = await this.usersService.create(createUserDto);
-    return this.sign(newUser);
+    createUserDto.password = await this.hashPassword(createUserDto.password);
+    return await this.usersService.create(createUserDto);
   }
 }
