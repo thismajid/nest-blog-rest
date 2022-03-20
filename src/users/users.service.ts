@@ -11,7 +11,7 @@ export class UsersService {
     return this.prismaService.user.create({ data: createUserDto });
   }
 
-  findAll(query: Prisma.UserInclude) {
+  async findAll(query: Prisma.UserInclude) {
     return this.prismaService.user.findMany({ include: query });
   }
 
