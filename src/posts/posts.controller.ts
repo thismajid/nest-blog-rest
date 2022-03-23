@@ -23,7 +23,7 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Me() { id, email }, @Body() createPostDto: CreatePostDto) {
+  create(@Me() { id }, @Body() createPostDto: CreatePostDto) {
     const categories = createPostDto.categories?.map((category) => ({
       id: category,
     }));
